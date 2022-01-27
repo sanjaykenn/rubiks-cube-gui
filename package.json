@@ -1,12 +1,19 @@
 {
-  "name": "rubiks-cube-gui",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Sanjay Kenn",
-  "license": "ISC"
+	"name": "rubiks-cube-gui",
+	"version": "1.0.0",
+	"description": "3D Rubik's cube GUI for for web browser",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "webpack"
+	},
+	"keywords": [],
+	"author": "Sanjay Kenn",
+	"license": "ISC",
+	"devDependencies": {
+		"webpack": "^5.67.0",
+		"webpack-cli": "^4.9.2"
+	},
+	"dependencies": {
+		"lodash": "^4.17.21"
+	}
 }
