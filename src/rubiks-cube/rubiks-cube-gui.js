@@ -1,9 +1,11 @@
 import * as THREE from 'three';
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 
-let theta = 0;
-const radius = 100;
 const FOV = configGUI?.fov ?? 10;
+const MIN_DISTANCE = configGUI?.minDistance ?? 50;
+const MAX_DISTANCE = configGUI?.maxDistance ?? 250;
+const DAMPING_FACTOR = configGUI.dampingFactor ?? 0.05;
 const BACKGROUND = new THREE.Color(parseInt(configGUI?.background ?? '0xf0f0f0'));
 
 
@@ -12,6 +14,8 @@ export const container = document.createElement('div');
 const camera = new THREE.PerspectiveCamera(FOV, window.innerWidth / window.innerHeight, 1, 10000);
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer();
+const controls = new OrbitControls(camera, renderer.domElement);
+
 const pieces = createRubiksCubeMeshes(rubiksCube);
 
 
@@ -53,8 +57,14 @@ function createRubiksCubeMeshes(rubiksCube) {
 
 
 function init() {
-	camera.position.y = radius * Math.sin(Math.PI / 4);
-	scene.background = BACKGROUND
+	camera.position.set(45, 45, 45);
+	scene.background = BACKGROUND;
+
+	controls.minDistance = MIN_DISTANCE;
+	controls.maxDistance = MAX_DISTANCE;
+	controls.enableDamping = true;
+	controls.dampingFactor = DAMPING_FACTOR;
+	controls.enablePan = false;
 
 	pieces.forEach(piece => scene.add(piece));
 
@@ -67,18 +77,11 @@ function init() {
 
 function animate() {
 	requestAnimationFrame(animate);
+	controls.update();
 	render();
 }
 
 function render() {
-	theta += Math.PI * 0.005;
-
-	camera.position.x = radius * Math.sin(theta);
-	camera.position.z = radius * Math.cos(theta);
-	camera.lookAt(scene.position);
-
-	camera.updateMatrixWorld();
-
 	renderer.render(scene, camera);
 }
 

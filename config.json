@@ -13,6 +13,9 @@
 	},
 	"gui": {
 		"fov": 10,
+		"minDistance": 50,
+		"maxDistance": 250,
+		"dampingFactor": 0.05,
 		"background": "0xf0f0f0"
 	}
 }
