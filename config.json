@@ -1,0 +1,18 @@
+{
+	"rubiksCube": {
+		"spaceBetweenPieces": 0.05,
+		"colors": {
+			"R": "0xff0000",
+			"L": "0xff8000",
+			"U": "0xffffff",
+			"D": "0xffff00",
+			"F": "0x00ff00",
+			"B": "0x0000ff",
+			"noColor": "0x000000"
+		}
+	},
+	"gui": {
+		"fov": 10,
+		"background": "0xf0f0f0"
+	}
+}

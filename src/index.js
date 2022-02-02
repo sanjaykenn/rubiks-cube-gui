@@ -1,11 +1,4 @@
-import _ from 'lodash'
+import * as THREE from 'three';
+import * as RUBIKS_CUBE_GUI from "./rubiks-cube/rubiks-cube-gui";
 
-function component() {
-	const element = document.createElement('div')
-
-	element.innerHTML = _.join(['Hello', 'webpack'], ' ')
-
-	return element
-}
-
-document.body.appendChild(component());
+document.body.appendChild(RUBIKS_CUBE_GUI.container)
