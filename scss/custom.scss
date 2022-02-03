@@ -1,0 +1,22 @@
+$theme-colors: (
+		"primary": #777a7c,
+		"secondary": #a4abb0,
+);
+
+@import "bootstrap/scss/bootstrap.scss";
+
+#canvas-container {
+	height: 100%;
+}
+
+.color-option-label:hover {
+	opacity: 0.9;
+}
+
+.color-option-label {
+	border: 3px solid transparent;
+}
+
+.color-option-input:checked + .color-option-label {
+	border: solid;
+}

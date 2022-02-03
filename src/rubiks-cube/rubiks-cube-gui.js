@@ -56,7 +56,7 @@ function createRubiksCubeMeshes(rubiksCube) {
 }
 
 
-function init() {
+export function init() {
 	camera.position.set(45, 45, 45);
 	scene.background = BACKGROUND;
 
@@ -68,8 +68,8 @@ function init() {
 
 	pieces.forEach(piece => scene.add(piece));
 
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setPixelRatio(container.clientWidth / container.clientHeight);
+	renderer.setSize(container.clientWidth, container.clientHeight);
 
 	container.appendChild(renderer.domElement);
 	window.addEventListener('resize', onWindowResize);
@@ -86,10 +86,10 @@ function render() {
 }
 
 function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.aspect = container.clientWidth / container.clientHeight;
 	camera.updateProjectionMatrix();
 
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
 init();

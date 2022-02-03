@@ -5,7 +5,7 @@ const DEFAULT_CUBE_COLORS = {
 	U: '0xffffff',
 	D: '0xffff00',
 	F: '0x00ff00',
-	B: '0x0000ff'
+	B: '0x56a8f2'
 };
 const DEFAULT_NO_COLOR = 0;
 
@@ -97,7 +97,8 @@ function createRubiksCube(config) {
 	return {
 		centers: centers,
 		corners: corners,
-		edges: edges
+		edges: edges,
+		colors: cubeColors
 	};
 }
 
