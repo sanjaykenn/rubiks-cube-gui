@@ -2,35 +2,42 @@ import * as THREE from 'three';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 
+const COLORS = rubiksCube.colors;
 const FOV = configGUI?.fov ?? 10;
 const MIN_DISTANCE = configGUI?.minDistance ?? 50;
 const MAX_DISTANCE = configGUI?.maxDistance ?? 250;
 const DAMPING_FACTOR = configGUI.dampingFactor ?? 0.05;
 const BACKGROUND = new THREE.Color(parseInt(configGUI?.background ?? '0xf0f0f0'));
-
+const UV_TRANSLATION = uv;
+const PIECES_UV = {};
 
 export const container = document.createElement('div');
 
 const camera = new THREE.PerspectiveCamera(FOV, window.innerWidth / window.innerHeight, 1, 10000);
 const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement);
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const cube_uv = Array.from('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB');
 
 const pieces = createRubiksCubeMeshes(rubiksCube);
+
+let selectedFace;
 
 
 function createRubiksCubeMeshes(rubiksCube) {
 	const centers = rubiksCube.centers;
-	const corners = rubiksCube.corners;
 	const edges = rubiksCube.edges;
+	const corners = rubiksCube.corners;
 
 	const pieceMaterial = new THREE.MeshBasicMaterial({
 		vertexColors: true
 	});
 
-	return centers.concat(corners).concat(edges)
+	return centers.concat(edges).concat(corners)
 		.map(piece => [piece.position, piece.rotation, piece.colors])
-		.map(([position, rotation, colors]) => {
+		.map(([position, rotation, colors], i) => {
 			const pieceGeometry = new THREE.BoxGeometry(1, 1, 1).toNonIndexed();
 			pieceGeometry.setAttribute(
 				'color',
@@ -42,19 +49,14 @@ function createRubiksCubeMeshes(rubiksCube) {
 				));
 
 			const piece = new THREE.Mesh(pieceGeometry, pieceMaterial);
+			PIECES_UV[piece.id] = UV_TRANSLATION[i];
 
-			for (let k in position) {
-				piece.position[k] = position[k];
-			}
-
-			for (let k in rotation) {
-				piece.rotation[k] = rotation[k];
-			}
+			Object.keys(position).forEach(j => piece.position[j] = position[j]);
+			Object.keys(rotation).forEach(j => piece.rotation[j] = rotation[j]);
 
 			return piece;
 		})
 }
-
 
 export function init() {
 	camera.position.set(45, 45, 45);
@@ -73,6 +75,51 @@ export function init() {
 
 	container.appendChild(renderer.domElement);
 	window.addEventListener('resize', onWindowResize);
+	container.addEventListener('click', onClick);
+}
+
+export function selectFace(face) {
+	selectedFace = face;
+}
+
+export function getUV() {
+	return cube_uv.join('');
+}
+
+function onClick(event) {
+	if (selectedFace === undefined) {
+		return;
+	}
+
+	let x = event.clientX - container.getBoundingClientRect().left;
+	let y = event.clientY - container.getBoundingClientRect().top;
+	pointer.x = (x / container.clientWidth) * 2 - 1;
+	pointer.y = 1 - (y / container.clientHeight) * 2;
+
+	raycaster.setFromCamera(pointer, camera);
+
+	const intersect = raycaster.intersectObjects(scene.children)[0]
+
+	if (intersect === undefined) {
+		return;
+	}
+
+	const face = intersect.faceIndex >> 1;
+
+	if (face & 1 !== 0) {
+		return;
+	}
+
+	cube_uv[PIECES_UV[intersect.object.id][Math.floor(face / 2)]] = selectedFace;
+	const colors = intersect.object.geometry.getAttribute('color').array;
+
+	Array.from({length: 18})
+		.forEach((_, i) => colors[face * 18 + i] = new THREE.Color(COLORS[selectedFace])['rgb'[i % 3]]);
+
+	intersect.object.geometry.setAttribute(
+		'color',
+		new THREE.Float32BufferAttribute(colors, 3)
+	);
 }
 
 function animate() {

@@ -2,7 +2,9 @@ const webpack = require('webpack');
 const fs = require('fs');
 
 const config = JSON.parse(fs.readFileSync('config.json'));
-const configGUI = config?.gui
+const configGUI = config?.gui;
+
+const uv = JSON.parse(fs.readFileSync('uv.json'));
 
 const rubiksCube = require('./src/rubiks-cube/rubiks-cube').createRubiksCube(config.rubiksCube);
 
@@ -11,6 +13,7 @@ module.exports = {
 		new webpack.DefinePlugin({
 			rubiksCube,
 			configGUI,
+			uv
 		})
 	],
 	module: {
