@@ -6,10 +6,13 @@ const COLORS = rubiksCube.colors;
 const FOV = configGUI?.fov ?? 10;
 const MIN_DISTANCE = configGUI?.minDistance ?? 50;
 const MAX_DISTANCE = configGUI?.maxDistance ?? 250;
-const DAMPING_FACTOR = configGUI.dampingFactor ?? 0.05;
+const DAMPING_FACTOR = configGUI?.dampingFactor ?? 0.05;
 const BACKGROUND = new THREE.Color(parseInt(configGUI?.background ?? '0xf0f0f0'));
+const RESET_CAMERA_SPEED = configGUI?.resetCameraSpeed ?? 0.1;
+
 const UV_TRANSLATION = uv;
 const PIECES_UV = {};
+const CAMERA_START = new THREE.Vector3(45, 45, 45);
 
 export const container = document.createElement('div');
 
@@ -19,11 +22,12 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement);
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
-const cube_uv = Array.from('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB');
+const cubeUV = Array.from('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB');
 
 const pieces = createRubiksCubeMeshes(rubiksCube);
 
 let selectedFace;
+let resettingCamera = false;
 
 
 function createRubiksCubeMeshes(rubiksCube) {
@@ -59,7 +63,7 @@ function createRubiksCubeMeshes(rubiksCube) {
 }
 
 export function init() {
-	camera.position.set(45, 45, 45);
+	camera.position.set(CAMERA_START.x, CAMERA_START.y, CAMERA_START.z);
 	scene.background = BACKGROUND;
 
 	controls.minDistance = MIN_DISTANCE;
@@ -83,10 +87,16 @@ export function selectFace(face) {
 }
 
 export function getUV() {
-	return cube_uv.join('');
+	return cubeUV.join('');
+}
+
+export function resetCamera() {
+	resettingCamera = true;
 }
 
 function onClick(event) {
+	resettingCamera = false;
+
 	if (selectedFace === undefined) {
 		return;
 	}
@@ -106,11 +116,11 @@ function onClick(event) {
 
 	const face = intersect.faceIndex >> 1;
 
-	if (face & 1 !== 0) {
+	if (face & 1 !== 0 || face / 2 >= PIECES_UV[intersect.object.id].length) {
 		return;
 	}
 
-	cube_uv[PIECES_UV[intersect.object.id][Math.floor(face / 2)]] = selectedFace;
+	cubeUV[PIECES_UV[intersect.object.id][Math.floor(face / 2)]] = selectedFace;
 	const colors = intersect.object.geometry.getAttribute('color').array;
 
 	Array.from({length: 18})
@@ -124,6 +134,11 @@ function onClick(event) {
 
 function animate() {
 	requestAnimationFrame(animate);
+
+	if (resettingCamera) {
+		camera.position.lerp(CAMERA_START, RESET_CAMERA_SPEED);
+	}
+
 	controls.update();
 	render();
 }
