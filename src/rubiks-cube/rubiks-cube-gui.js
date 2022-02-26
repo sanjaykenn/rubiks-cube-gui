@@ -25,6 +25,7 @@ const pointer = new THREE.Vector2();
 const cubeUV = Array.from('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB');
 
 const pieces = createRubiksCubeMeshes(rubiksCube);
+const cornersEdges = pieces.slice(6);
 
 let selectedFace;
 let resettingCamera = false;
@@ -76,10 +77,12 @@ export function init() {
 
 	renderer.setPixelRatio(container.clientWidth / container.clientHeight);
 	renderer.setSize(container.clientWidth, container.clientHeight);
+	onWindowResize()
 
 	container.appendChild(renderer.domElement);
 	window.addEventListener('resize', onWindowResize);
 	container.addEventListener('click', onClick);
+	container.addEventListener('mousedown', () => resettingCamera = false)
 }
 
 export function selectFace(face) {
@@ -95,8 +98,6 @@ export function resetCamera() {
 }
 
 function onClick(event) {
-	resettingCamera = false;
-
 	if (selectedFace === undefined) {
 		return;
 	}
@@ -108,15 +109,15 @@ function onClick(event) {
 
 	raycaster.setFromCamera(pointer, camera);
 
-	const intersect = raycaster.intersectObjects(scene.children)[0]
+	const intersect = raycaster.intersectObjects(cornersEdges)[0]
 
 	if (intersect === undefined) {
 		return;
 	}
 
-	const face = intersect.faceIndex >> 1;
+	const face = Math.floor(intersect.faceIndex / 2);
 
-	if (face & 1 !== 0 || face / 2 >= PIECES_UV[intersect.object.id].length) {
+	if (face % 2 !== 0 || face / 2 >= PIECES_UV[intersect.object.id].length) {
 		return;
 	}
 

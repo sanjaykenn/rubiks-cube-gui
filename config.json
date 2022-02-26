@@ -18,5 +18,9 @@
 		"dampingFactor": 0.05,
 		"resetCameraSpeed": 0.05,
 		"background": "0xf0f0f0"
+	},
+	"websocket": {
+		"host": null,
+		"port": 8080
 	}
 }

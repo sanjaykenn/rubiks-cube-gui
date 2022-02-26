@@ -1,19 +1,24 @@
 const webpack = require('webpack');
-const fs = require('fs');
+const config = require('./config.json')
+const uv = require('./uv.json')
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const config = JSON.parse(fs.readFileSync('config.json'));
 const configGUI = config?.gui;
-
-const uv = JSON.parse(fs.readFileSync('uv.json'));
+const configWebsocket = config?.websocket;
 
 const rubiksCube = require('./src/rubiks-cube/rubiks-cube').createRubiksCube(config.rubiksCube);
+
 
 module.exports = {
 	plugins: [
 		new webpack.DefinePlugin({
 			rubiksCube,
 			configGUI,
-			uv
+			uv,
+			configWebsocket
+		}),
+		new HtmlWebpackPlugin({
+			template: 'src/index.html'
 		})
 	],
 	module: {
@@ -21,9 +26,9 @@ module.exports = {
 			{
 				test: /\.s[ac]ss$/i,
 				use: [
-					"style-loader",
-					"css-loader",
-					"sass-loader",
+					'style-loader',
+					'css-loader',
+					'sass-loader',
 				],
 			},
 		],
