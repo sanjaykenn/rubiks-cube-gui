@@ -75,12 +75,10 @@ export function init() {
 
 	pieces.forEach(piece => scene.add(piece));
 
-	renderer.setPixelRatio(container.clientWidth / container.clientHeight);
-	renderer.setSize(container.clientWidth, container.clientHeight);
 	onWindowResize()
 
 	container.appendChild(renderer.domElement);
-	window.addEventListener('resize', onWindowResize);
+	window.addEventListener('resize', onWindowResize, true);
 	container.addEventListener('click', onClick);
 	container.addEventListener('mousedown', () => resettingCamera = false)
 }
@@ -152,6 +150,7 @@ function onWindowResize() {
 	camera.aspect = container.clientWidth / container.clientHeight;
 	camera.updateProjectionMatrix();
 
+	renderer.setPixelRatio(container.clientWidth / container.clientHeight);
 	renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
