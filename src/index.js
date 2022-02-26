@@ -25,6 +25,14 @@ Array.from('RLFBUD').forEach(side => {
 		.style.background = '#' + rubiksCubeColors[side].toString(16).padStart(6, '0');
 })
 
+document.addEventListener('keypress', e => {
+	if (!'RLFBUD'.includes(e.key.toUpperCase())) {
+		return
+	}
+
+	document.querySelector(`#color-side-${e.key.toLowerCase()}`).click()
+})
+
 socket.addEventListener('message', e => {
 	if (e.data === 'invalid') {
 		scrambleSolution.innerText = 'Enter Scramble!';

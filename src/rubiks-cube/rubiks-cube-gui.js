@@ -78,7 +78,7 @@ export function init() {
 	onWindowResize()
 
 	container.appendChild(renderer.domElement);
-	window.addEventListener('resize', onWindowResize, true);
+	window.addEventListener('resize', onWindowResize);
 	container.addEventListener('click', onClick);
 	container.addEventListener('mousedown', () => resettingCamera = false)
 }

@@ -1,6 +1,6 @@
 {
 	"rubiksCube": {
-		"spaceBetweenPieces": 0.05,
+		"spaceBetweenPieces": 0.025,
 		"colors": {
 			"R": "0xff0000",
 			"L": "0xff8000",
