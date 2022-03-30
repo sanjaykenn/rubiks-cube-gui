@@ -1,15 +1,16 @@
+import * as RUBIKS_CUBE_GUI from './rubiks-cube/rubiks-cube-gui';
+import * as CONFIG from '/config.json';
+
 import 'bootstrap'
 import '/scss/custom.scss'
-import * as RUBIKS_CUBE_GUI from './rubiks-cube/rubiks-cube-gui';
-import {resetCamera} from "./rubiks-cube/rubiks-cube-gui";
 
-const rubiksCubeColors = rubiksCube.colors;
+const rubiksCubeColors = RUBIKS_CUBE_GUI.rubiksCube.colors;
 const scrambleSolution = document.querySelector('#scramble-solution');
 const solveCube = document.querySelector('#solve-cube');
 const solveTime = document.querySelector('#solve-time');
 const invalidScramble = document.querySelector('#invalid-scramble');
 
-const socket = new WebSocket(`ws://${configWebsocket.host ?? window.location.hostname}:${configWebsocket.port}`)
+const socket = new WebSocket(`ws://${CONFIG.websocket.host ?? window.location.hostname}:${CONFIG.websocket.port}`)
 
 RUBIKS_CUBE_GUI.container.style.height = '100%';
 document.querySelector('#canvas-container').appendChild(RUBIKS_CUBE_GUI.container);
@@ -38,17 +39,22 @@ socket.addEventListener('message', e => {
 		scrambleSolution.innerText = 'Enter Scramble!';
 		solveTime.classList.add('d-none');
 		invalidScramble.classList.remove('d-none');
+		solveCube.disabled = false;
 	} else {
 		const data = JSON.parse(e.data);
 
-		resetCamera();
+		RUBIKS_CUBE_GUI.resetCamera();
 		scrambleSolution.innerText = data.solution;
 		solveTime.classList.remove('d-none');
 		solveTime.innerText = `${data.time.toFixed(5)}s`;
 		invalidScramble.classList.add('d-none');
-	}
 
-	solveCube.disabled = false;
+		const moves = data.solution.split(' ');
+		moves.forEach((move, i) => {
+			const callback = (i === moves.length - 1) ? (() => solveCube.disabled = false) : (() => {});
+			RUBIKS_CUBE_GUI.addMove(move, RUBIKS_CUBE_GUI.TURN_SPEED, RUBIKS_CUBE_GUI.TURN_PAUSE, callback);
+		});
+	}
 })
 
 solveCube.addEventListener('click', () => {

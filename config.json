@@ -17,6 +17,11 @@
 		"maxDistance": 250,
 		"dampingFactor": 0.05,
 		"resetCameraSpeed": 0.05,
+		"resetCameraStopSpeed": 0.1,
+		"turnSpeed": 0.025,
+		"turnSpeedFast": 0.1,
+		"turnPause": 50,
+		"turnFastPause": 0.1,
 		"background": "0xf0f0f0"
 	},
 	"websocket": {
